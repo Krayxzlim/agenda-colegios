@@ -18,50 +18,52 @@ class AgendaController extends Controller
         return view('agenda.index', compact('talleres','colegios','usuarios'));
     }
 
-    public function events()
+    public function getEvents()
     {
-        $agenda = Agenda::with('taller','colegio','talleristas')->get();
-        $events = $agenda->map(function($a){
+        $agendas = Agenda::with(['colegio', 'taller', 'talleristas'])->get();
+
+        $events = $agendas->map(function ($agenda) {
             return [
-                'id' => $a->id,
-                'title' => $a->taller->nombre . ' - ' . $a->colegio->nombre,
-                'start' => $a->fecha . 'T' . $a->hora,
-                'taller_id' => $a->taller_id,
-                'colegio_id' => $a->colegio_id,
-                'talleristas' => $a->talleristas->pluck('id')->toArray()
+                'id' => $agenda->id,
+                'title' => $agenda->taller?->nombre . ' - ' . $agenda->colegio?->nombre,
+                'start' => $agenda->fecha . 'T' . $agenda->hora,
+                'extendedProps' => [
+                    'colegio_id' => $agenda->colegio_id,
+                    'taller_id' => $agenda->taller_id,
+                    'talleristas' => $agenda->talleristas->pluck('id')->toArray(),
+                ],
             ];
         });
+
         return response()->json($events);
     }
 
     public function store(Request $request)
     {
-        // Validar los datos principales
-        $data = $request->validate([
-            'taller_id'   => 'required|exists:talleres,id',
-            'colegio_id'  => 'required|exists:colegios,id',
-            'fecha'       => 'required|date',
-            'hora'        => 'required',
+        $request->validate([
+            'colegio_id' => 'required|exists:colegios,id',
+            'taller_id' => 'required|exists:talleres,id',
+            'fecha' => 'required|date',
+            'hora' => 'required',
+            'talleristas' => 'array|max:2',
         ]);
 
-        // Crear o actualizar la agenda
-        $agenda = $request->id
-            ? Agenda::findOrFail($request->id)
-            : new Agenda();
+        $agenda = Agenda::updateOrCreate(
+            ['id' => $request->id],
+            $request->only('colegio_id', 'taller_id', 'fecha', 'hora')
+        );
 
-        $agenda->fill($data)->save();
-
-        // Sincronizar los talleristas si están presentes
-        if ($request->has('talleristas')) {
-            $agenda->talleristas()->sync($request->talleristas);
-        }
+        // Sincronizar talleristas
+        $agenda->talleristas()->sync($request->talleristas ?? []);
 
         return response()->json(['success' => true]);
     }
 
     public function destroy($id)
     {
-        Agenda::findOrFail($id)->delete();
-        return response()->json(['success'=>true]);
+        $agenda = Agenda::findOrFail($id);
+        $agenda->delete();
+
+        return response()->json(['success' => true]);
     }
 }

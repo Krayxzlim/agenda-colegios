@@ -11,10 +11,12 @@ return new class extends Migration {
             $table->string('nombre');
             $table->string('apellido');
             $table->string('email')->unique();
+            $table->string('password'); // 🔑 contraseña encriptada con Hash
             $table->string('rol'); // admin, tallerista, etc
             $table->timestamps();
         });
     }
+
     public function down(): void {
         Schema::dropIfExists('usuarios');
     }

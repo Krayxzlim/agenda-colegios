@@ -4,12 +4,14 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
+use function Laravel\Prompts\password;
+
 class Usuario extends Model
 {
     use HasFactory;
 
     protected $table = 'usuarios';
-    protected $fillable = ['nombre', 'apellido', 'email', 'rol'];
+    protected $fillable = ['nombre', 'apellido', 'email','password', 'rol'];
 
     public function agenda()
     {
