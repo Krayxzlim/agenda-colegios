@@ -35,6 +35,13 @@
                         <a class="nav-link" href="{{ route('usuarios.index') }}">Usuarios</a>
                     </li>
                 @endif
+
+                @if(auth()->check() && in_array(auth()->user()->rol, ['admin','supervisor']))
+                    <li class="nav-item">
+                        <a class="nav-link" href="{{ route('reportes.index') }}">Reportes</a>
+                    </li>
+                @endif
+
             @endauth
         </ul>
 

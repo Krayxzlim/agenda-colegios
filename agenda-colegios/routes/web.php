@@ -1,7 +1,7 @@
 <?php
 
 use Illuminate\Support\Facades\Route;
-use App\Http\Controllers\{AuthController, UsuarioController, ColegioController, TallerController, AgendaController};
+use App\Http\Controllers\{AuthController, UsuarioController, ColegioController, TallerController, AgendaController,ReporteController};
 
 Route::get('/', [AgendaController::class, 'index'])->name('agenda.index');
 Route::get('login', function(){ return view('auth.login'); })->name('login');
@@ -17,4 +17,11 @@ Route::resource('talleres', TallerController::class);
 
 Route::post('agenda/{agenda}/asignar-tallerista', [AgendaController::class,'asignarTallerista'])->name('agenda.asignar');
 Route::post('agenda/{agenda}/eliminar-tallerista', [AgendaController::class,'eliminarTallerista'])->name('agenda.eliminar');
+
+Route::middleware(['auth'])->group(function () {
+    Route::get('/reportes', [ReporteController::class, 'index'])->name('reportes.index');
+    Route::post('/reportes/filtrar', [ReporteController::class, 'filtrar'])->name('reportes.filtrar');
+    Route::post('/reportes/export', [ReporteController::class, 'export'])->name('reportes.export');
+});
+
 
