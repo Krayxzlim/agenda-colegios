@@ -24,8 +24,7 @@
 
           <div class="mb-3">
             <label>Colectivo / Colegio</label>
-            <select name="colegio_id" id="colegio_id" class="form-control"
-              @if(auth()->user()->rol === 'tallerista') disabled @endif>
+            <select name="colegio_id" id="colegio_id" class="form-control">
               @foreach($colegios as $colegio)
                 <option value="{{ $colegio->id }}">{{ $colegio->nombre }}</option>
               @endforeach
@@ -34,8 +33,7 @@
 
           <div class="mb-3">
             <label>Taller</label>
-            <select name="taller_id" id="taller_id" class="form-control"
-              @if(auth()->user()->rol === 'tallerista') disabled @endif>
+            <select name="taller_id" id="taller_id" class="form-control">
               @foreach($talleres as $t)
                 <option value="{{ $t->id }}">{{ $t->nombre }}</option>
               @endforeach
@@ -44,28 +42,48 @@
 
           <div class="mb-3">
             <label>Fecha</label>
-            <input type="date" name="fecha" id="fecha" class="form-control" required
-              @if(auth()->user()->rol === 'tallerista') disabled @endif>
+            <input type="date" name="fecha" id="fecha" class="form-control" required>
           </div>
 
           <div class="mb-3">
             <label>Hora</label>
-            <input type="time" name="hora" id="hora" class="form-control" required
-              @if(auth()->user()->rol === 'tallerista') disabled @endif>
+            <input type="time" name="hora" id="hora" class="form-control" required>
           </div>
 
           <div class="mb-3">
             <label>Talleristas</label>
-            <select multiple name="talleristas[]" id="talleristas" class="form-control">
-              @foreach($usuarios as $u)
-                <option value="{{ $u->id }}"
-                  data-self="{{ $u->id == auth()->id() ? 'true' : 'false' }}">
-                  {{ $u->nombre }} {{ $u->apellido }}
-                </option>
-              @endforeach
-            </select>
-            <small class="text-muted">Máx. 2 talleristas por evento</small>
+
+            @if(in_array(auth()->user()->rol, ['admin','supervisor']))
+                <div id="talleristaSelectContainer">
+                    <select name="talleristas[]" id="tallerista1" class="form-control mb-2">
+                    <option value="">-- Seleccionar Tallerista 1 --</option>
+                    @foreach($usuarios as $u)
+                        <option value="{{ $u->id }}">{{ $u->nombre }} {{ $u->apellido }}</option>
+                    @endforeach
+                    </select>
+
+                    <select name="talleristas[]" id="tallerista2" class="form-control mb-2">
+                    <option value="">-- Seleccionar Tallerista 2 --</option>
+                    @foreach($usuarios as $u)
+                        <option value="{{ $u->id }}">{{ $u->nombre }} {{ $u->apellido }}</option>
+                    @endforeach
+                    </select>
+                </div>
+
+                <div id="talleristaResumen" class="d-none">
+                    <p><strong>Tallerista 1:</strong> <span id="t1Nombre"></span></p>
+                    <p><strong>Tallerista 2:</strong> <span id="t2Nombre"></span></p>
+                    <button type="button" class="btn btn-warning" id="editarTalleristasBtn">Remover / Editar Talleristas</button>
+                </div>
+
+                <small class="text-muted">Máx. 2 talleristas por evento</small>
+            @endif
+
+            @if(auth()->user()->rol === 'tallerista')
+                <p class="text-muted">La asignación de talleristas solo puede realizarla un Admin o Supervisor.</p>
+            @endif
           </div>
+
 
           <!-- Botón extra solo si el usuario es Admin o Supervisor -->
           @if(in_array(auth()->user()->rol, ['admin','supervisor']))
@@ -94,112 +112,6 @@
 @endsection
 
 @push('scripts')
-<script>
-document.addEventListener('DOMContentLoaded', function() {
-    let calendarEl = document.getElementById("calendar");
-    let modalEl = document.getElementById("eventModal");
-    let form = document.getElementById("eventForm");
-    let deleteBtn = document.getElementById("deleteBtn");
-    let errorBox = document.getElementById("formErrors");
-
-    // Reset modal
-    function resetModal() {
-        document.getElementById("modalTitle").innerText = "Agregar Evento";
-        form.reset();
-        document.getElementById("eventId").value = "";
-        errorBox.classList.add("d-none");
-        deleteBtn.style.display = "none";
-        document.getElementById("removeTalleristaBtn")?.classList.add("d-none");
-    }
-
-    // Calendar init
-    let calendar = new FullCalendar.Calendar(calendarEl, {
-        initialView: "dayGridMonth",
-        editable: true,
-        selectable: true,
-        events: "/agenda/events", // carga AJAX
-        dateClick: function(info) {
-            resetModal();
-            document.getElementById("fecha").value = info.dateStr;
-            new bootstrap.Modal(modalEl).show();
-        },
-        eventClick: function(info) {
-            resetModal();
-            document.getElementById("modalTitle").innerText = "Editar Evento";
-            document.getElementById("eventId").value = info.event.id;
-
-            let start = info.event.start;
-            document.getElementById("fecha").value = start.toISOString().split("T")[0];
-            document.getElementById("hora").value = start.toTimeString().slice(0, 5);
-            document.getElementById("colegio_id").value = info.event.extendedProps.colegio_id;
-            document.getElementById("taller_id").value = info.event.extendedProps.taller_id;
-
-            let talleristasSelect = document.getElementById("talleristas");
-            Array.from(talleristasSelect.options).forEach(
-                (o) => (o.selected = info.event.extendedProps.talleristas.includes(parseInt(o.value)))
-            );
-
-            deleteBtn.style.display = "inline-block";
-            deleteBtn.onclick = function () {
-                if (confirm("¿Seguro que deseas eliminar este evento?")) {
-                    fetch(`/agenda/${info.event.id}`, {
-                        method: "DELETE",
-                        headers: {
-                            "X-CSRF-TOKEN": document.querySelector('meta[name="csrf-token"]').content
-                        }
-                    })
-                    .then(res => res.json())
-                    .then(data => {
-                        if(data.success){
-                            info.event.remove();
-                            bootstrap.Modal.getInstance(modalEl).hide();
-                        } else {
-                            alert("Error al eliminar");
-                        }
-                    });
-                }
-            };
-
-            new bootstrap.Modal(modalEl).show();
-        },
-    });
-    calendar.render();
-
-    // Guardar evento (AJAX)
-    form.onsubmit = function(e) {
-        e.preventDefault();
-
-        let talleristasSelect = document.getElementById("talleristas");
-        if (talleristasSelect.selectedOptions.length > 2) {
-            errorBox.textContent = "Solo puedes seleccionar hasta 2 talleristas.";
-            errorBox.classList.remove("d-none");
-            return;
-        }
-
-        let formData = new FormData(form);
-
-        fetch("/agenda/store", {
-            method: "POST",
-            headers: {
-                "X-CSRF-TOKEN": document.querySelector('meta[name="csrf-token"]').content
-            },
-            body: formData
-        })
-        .then(res => res.json())
-        .then(data => {
-            if(data.success){
-                calendar.refetchEvents(); // refresca sin recargar
-                bootstrap.Modal.getInstance(modalEl).hide();
-            } else {
-                errorBox.textContent = "Error al guardar el evento.";
-                errorBox.classList.remove("d-none");
-            }
-        })
-        .catch(() => {
-            errorBox.textContent = "Error de conexión.";
-            errorBox.classList.remove("d-none");
-        });
-    };
-});
-</script>
+<script src="{{ asset('js/calendar.js') }}"></script>
 @endpush
+
