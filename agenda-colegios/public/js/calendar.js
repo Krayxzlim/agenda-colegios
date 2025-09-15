@@ -53,6 +53,15 @@ document.addEventListener("DOMContentLoaded", function () {
         },
 
         dateClick: function (info) {
+            // Validar si es fin de semana
+            const dia = info.date.getDay(); // 0 = Domingo, 6 = Sábado
+            if (dia === 0 || dia === 6) {
+                const confirmar = confirm(
+                    "Está seleccionando un fin de semana. ¿Está seguro que desea agendar el taller?"
+                );
+                if (!confirmar) return; // Si el usuario cancela, no abrir el modal
+            }
+
             resetModal();
             const fecha = document.getElementById("fecha");
             if (fecha) fecha.value = info.dateStr;

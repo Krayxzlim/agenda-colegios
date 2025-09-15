@@ -9,7 +9,6 @@
 <table class="table table-bordered">
     <thead>
         <tr>
-            <th>ID</th>
             <th>Nombre</th>
             <th>Apellido</th>
             <th>Email</th>
@@ -19,7 +18,6 @@
     <tbody>
         @foreach($usuarios as $u)
         <tr>
-            <td>{{ $u->id }}</td>
             <td>{{ $u->nombre }}</td>
             <td>{{ $u->apellido }}</td>
             <td>{{ $u->email }}</td>

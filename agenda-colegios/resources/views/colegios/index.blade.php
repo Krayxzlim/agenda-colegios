@@ -9,7 +9,6 @@
 <table class="table table-bordered">
     <thead>
         <tr>
-            <th>ID</th>
             <th>Nombre</th>
             <th>Dirección</th>
             <th>Acciones</th>
@@ -18,7 +17,6 @@
     <tbody>
         @foreach($colegios as $c)
         <tr>
-            <td>{{ $c->id }}</td>
             <td>{{ $c->nombre }}</td>
             <td>{{ $c->direccion }}</td>
             <td>
