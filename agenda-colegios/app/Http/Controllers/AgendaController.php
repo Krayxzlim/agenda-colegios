@@ -30,7 +30,12 @@ class AgendaController extends Controller
                 'extendedProps' => [
                     'colegio_id' => $agenda->colegio_id,
                     'taller_id' => $agenda->taller_id,
-                    'talleristas' => $agenda->talleristas->pluck('id')->toArray(),
+                    'talleristas' => $agenda->talleristas->map(function($u) {
+                        return [
+                            'id' => $u->id,
+                            'nombre_completo' => $u->nombre . ' ' . $u->apellido
+                        ];
+                    }),
                 ],
             ];
         });
@@ -41,11 +46,11 @@ class AgendaController extends Controller
     public function store(Request $request)
     {
         $request->validate([
-            'colegio_id' => 'required|exists:colegios,id',
-            'taller_id' => 'required|exists:talleres,id',
-            'fecha' => 'required|date',
-            'hora' => 'required',
-            'talleristas' => 'array|max:2',
+            'colegio_id' => 'sometimes|exists:colegios,id',
+            'taller_id' => 'sometimes|exists:talleres,id',
+            'fecha' => 'sometimes|date',
+            'hora' => 'sometimes',
+            'talleristas' => 'sometimes|array|max:2',
         ]);
 
         $agenda = Agenda::updateOrCreate(

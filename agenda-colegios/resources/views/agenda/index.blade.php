@@ -8,6 +8,32 @@
     </div>
 </div>
 
+<!-- Modal de Detalle del Evento -->
+<div class="modal fade" id="eventDetailModal" tabindex="-1">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="detailModalTitle">Detalle del Evento</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+      </div>
+      <div class="modal-body">
+        <p><strong>Colegio:</strong> <span id="detailColegio"></span></p>
+        <p><strong>Taller:</strong> <span id="detailTaller"></span></p>
+        <p><strong>Fecha:</strong> <span id="detailFecha"></span></p>
+        <p><strong>Hora:</strong> <span id="detailHora"></span></p>
+        <div id="detailTalleristasContainer">
+          <p><strong>Tallerista 1:</strong> <span id="detailT1"></span></p>
+          <p><strong>Tallerista 2:</strong> <span id="detailT2"></span></p>
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+        <button type="button" class="btn btn-primary" id="openEditModalBtn">Editar</button>
+      </div>
+    </div>
+  </div>
+</div>
+
 <!-- Modal para Agregar/Editar Evento -->
 <div class="modal fade" id="eventModal" tabindex="-1">
   <div class="modal-dialog">
@@ -23,7 +49,7 @@
           <div id="formErrors" class="alert alert-danger d-none"></div>
 
           <div class="mb-3">
-            <label>Colectivo / Colegio</label>
+            <label>Colegio</label>
             <select name="colegio_id" id="colegio_id" class="form-control">
               @foreach($colegios as $colegio)
                 <option value="{{ $colegio->id }}">{{ $colegio->nombre }}</option>
