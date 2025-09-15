@@ -3,7 +3,7 @@
 @section('content')
 <div class="d-flex justify-content-between mb-3">
     <h2>Colegios</h2>
-    <button class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#colegioModal">Agregar Colegio</button>
+    <button class="btn btn-primary">Agregar Colegio</button>
 </div>
 
 <table class="table table-bordered">

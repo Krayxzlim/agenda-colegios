@@ -3,7 +3,7 @@
 @section('content')
 <div class="d-flex justify-content-between mb-3">
     <h2>Usuarios</h2>
-    <button class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#userModal">Agregar Usuario</button>
+    <button class="btn btn-primary" onclick="newUser()">Agregar Usuario</button>
 </div>
 
 <table class="table table-bordered">
@@ -12,6 +12,7 @@
             <th>Nombre</th>
             <th>Apellido</th>
             <th>Email</th>
+            <th>Rol</th>
             <th>Acciones</th>
         </tr>
     </thead>
@@ -21,8 +22,9 @@
             <td>{{ $u->nombre }}</td>
             <td>{{ $u->apellido }}</td>
             <td>{{ $u->email }}</td>
+            <td>{{ $u->rol }}</td>
             <td>
-                <button class="btn btn-sm btn-warning" onclick="editUser({{ $u }})">Editar</button>
+                <button class="btn btn-sm btn-warning" onclick="editUser({{ $u }})">Editar Rol</button>
                 <form action="{{ route('usuarios.destroy', $u->id) }}" method="POST" class="d-inline">
                     @csrf @method('DELETE')
                     <button class="btn btn-sm btn-danger">Eliminar</button>
@@ -45,21 +47,30 @@
           <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
         </div>
         <div class="modal-body">
-            <div class="mb-3">
-                <label>Nombre</label>
-                <input type="text" name="nombre" id="userNombre" class="form-control" required>
+            <div id="fieldsFull">
+                <div class="mb-3">
+                    <label>Nombre</label>
+                    <input type="text" name="nombre" id="userNombre" class="form-control">
+                </div>
+                <div class="mb-3">
+                    <label>Apellido</label>
+                    <input type="text" name="apellido" id="userApellido" class="form-control">
+                </div>
+                <div class="mb-3">
+                    <label>Email</label>
+                    <input type="email" name="email" id="userEmail" class="form-control">
+                </div>
+                <div class="mb-3">
+                    <label>Password</label>
+                    <input type="password" name="password" id="userPassword" class="form-control">
+                </div>
             </div>
             <div class="mb-3">
-                <label>Apellido</label>
-                <input type="text" name="apellido" id="userApellido" class="form-control" required>
-            </div>
-            <div class="mb-3">
-                <label>Email</label>
-                <input type="email" name="email" id="userEmail" class="form-control" required>
-            </div>
-            <div class="mb-3">
-                <label>Password</label>
-                <input type="password" name="password" id="userPassword" class="form-control" required>
+                <label>Rol</label>
+                <select name="rol" id="userRol" class="form-control" required>
+                    <option value="admin">Admin</option>
+                    <option value="tallerista">Tallerista</option>
+                </select>
             </div>
         </div>
         <div class="modal-footer">
@@ -74,14 +85,19 @@
 
 @push('scripts')
 <script>
+function newUser(){
+    document.getElementById('userForm').reset();
+    document.getElementById('userId').value = '';
+    document.getElementById('fieldsFull').style.display = 'block'; // mostrar todos los campos
+    document.querySelector('#userModal .modal-title').innerText = 'Agregar Usuario';
+    new bootstrap.Modal(document.getElementById('userModal')).show();
+}
+
 function editUser(u){
     document.getElementById('userId').value = u.id;
-    document.getElementById('userNombre').value = u.nombre;
-    document.getElementById('userApellido').value = u.apellido;
-    document.getElementById('userEmail').value = u.email;
-    // Para editar, quitamos el required del password si no se quiere cambiar
-    document.getElementById('userPassword').required = false;
-    document.querySelector('#userModal .modal-title').innerText = 'Editar Usuario';
+    document.getElementById('fieldsFull').style.display = 'none'; // ocultar campos nombre, email, password
+    document.getElementById('userRol').value = u.rol;
+    document.querySelector('#userModal .modal-title').innerText = 'Editar Rol';
     new bootstrap.Modal(document.getElementById('userModal')).show();
 }
 </script>

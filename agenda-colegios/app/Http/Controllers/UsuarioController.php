@@ -16,25 +16,29 @@ class UsuarioController extends Controller
 
     public function store(Request $request)
     {
-        $data = $request->validate([
-            'nombre'=>'required',
-            'apellido'=>'required',
-            'email'=>'required|email',
-            'password'=>'nullable|min:6'
-        ]);
-
-        if($request->id){
+        // Si viene con ID => es edición
+        if ($request->id) {
             $usuario = Usuario::findOrFail($request->id);
+
+            // Solo se puede cambiar rol
             $usuario->update([
-                'nombre'=>$data['nombre'],
-                'apellido'=>$data['apellido'],
-                'email'=>$data['email'],
-                'password'=>$data['password'] ? Hash::make($data['password']) : $usuario->password
+                'rol' => $request->rol,
             ]);
+
         } else {
+            // Validación creación
+            $data = $request->validate([
+                'nombre'   => 'required',
+                'apellido' => 'required',
+                'email'    => 'required|email|unique:usuarios,email',
+                'password' => 'required|min:6',
+                'rol'      => 'required|in:admin,tallerista',
+            ]);
+
             $data['password'] = Hash::make($data['password']);
             Usuario::create($data);
         }
+
         return redirect()->route('usuarios.index');
     }
 

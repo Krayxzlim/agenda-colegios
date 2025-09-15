@@ -1,21 +1,66 @@
 document.addEventListener("DOMContentLoaded", function () {
+    // 🔹 Elementos del DOM
     const calendarEl = document.getElementById("calendar");
     const modalEl = document.getElementById("eventModal");
+    const detailModalEl = document.getElementById("eventDetailModal");
     const form = document.getElementById("eventForm");
     const deleteBtn = document.getElementById("deleteBtn");
     const errorBox = document.getElementById("formErrors");
+    const userModalEl = document.getElementById("userModal");
+    const userForm = document.getElementById("userForm");
 
-    // 🔹 Reset modal
+    if (!calendarEl) return;
+
+    // 🔹 Instancias únicas de modales
+    const eventModal = modalEl ? new bootstrap.Modal(modalEl) : null;
+    const eventDetailModal = detailModalEl
+        ? new bootstrap.Modal(detailModalEl)
+        : null;
+    const userModal = userModalEl ? new bootstrap.Modal(userModalEl) : null;
+
+    // 🔹 Funciones para nuevo/editar usuario
+    window.newUser = function () {
+        if (!userModal) return;
+        userForm.reset();
+        document.getElementById("userId").value = "";
+        document.getElementById("fieldsFull").style.display = "block";
+        document.querySelector("#userModal .modal-title").innerText =
+            "Agregar Usuario";
+        userModal.show();
+    };
+
+    window.editUser = function (u) {
+        if (!userModal) return;
+        document.getElementById("userId").value = u.id;
+        document.getElementById("fieldsFull").style.display = "none";
+        document.getElementById("userRol").value = u.rol;
+        document.querySelector("#userModal .modal-title").innerText =
+            "Editar Rol";
+        userModal.show();
+    };
+
+    // 🔹 Reset modal usuario al cerrar
+    if (userModalEl) {
+        userModalEl.addEventListener("hidden.bs.modal", function () {
+            userForm.reset();
+            document.getElementById("fieldsFull").style.display = "block";
+            document.querySelector("#userModal .modal-title").innerText =
+                "Agregar Usuario";
+        });
+    }
+
+    // 🔹 Función para reset modal evento
     function resetModal() {
+        if (!form) return;
+        form.reset();
+        if (errorBox) errorBox.classList.add("d-none");
+        if (deleteBtn) deleteBtn.style.display = "none";
+
         const modalTitle = document.getElementById("modalTitle");
         if (modalTitle) modalTitle.innerText = "Agregar Evento";
 
-        form.reset();
         const eventId = document.getElementById("eventId");
         if (eventId) eventId.value = "";
-
-        errorBox?.classList.add("d-none");
-        if (deleteBtn) deleteBtn.style.display = "none";
 
         const tSelectContainer = document.getElementById(
             "talleristaSelectContainer"
@@ -24,54 +69,52 @@ document.addEventListener("DOMContentLoaded", function () {
         const t1Nombre = document.getElementById("t1Nombre");
         const t2Nombre = document.getElementById("t2Nombre");
 
-        tSelectContainer?.classList.remove("d-none");
-        tResumen?.classList.add("d-none");
+        if (tSelectContainer) tSelectContainer.classList.remove("d-none");
+        if (tResumen) tResumen.classList.add("d-none");
         if (t1Nombre) t1Nombre.innerText = "";
         if (t2Nombre) t2Nombre.innerText = "";
     }
 
-    // 🔹 Calendar init
+    // 🔹 Inicializar calendario
     const calendar = new FullCalendar.Calendar(calendarEl, {
-        initialView: "dayGridMonth", // vista inicial
+        initialView: "dayGridMonth",
         editable: true,
         selectable: true,
         events: "/agenda/events",
-
-        // 🔹 Toolbar superior con todas las vistas
         headerToolbar: {
             left: "prev,next today",
             center: "title",
             right: "multiMonthYear,dayGridMonth,timeGridWeek,timeGridDay,listWeek",
         },
-
         views: {
             multiMonthYear: {
                 type: "multiMonth",
-                duration: { months: 3 }, // por ejemplo, 3 meses
+                duration: { months: 3 },
                 buttonText: "3 Meses",
             },
         },
 
+        // 🔹 Click en fecha
         dateClick: function (info) {
-            // Validar si es fin de semana
-            const dia = info.date.getDay(); // 0 = Domingo, 6 = Sábado
+            const dia = info.date.getDay();
             if (dia === 0 || dia === 6) {
-                const confirmar = confirm(
-                    "Está seleccionando un fin de semana. ¿Está seguro que desea agendar el taller?"
-                );
-                if (!confirmar) return; // Si el usuario cancela, no abrir el modal
+                if (
+                    !confirm(
+                        "Está seleccionando un fin de semana. ¿Desea continuar?"
+                    )
+                )
+                    return;
             }
-
             resetModal();
             const fecha = document.getElementById("fecha");
             if (fecha) fecha.value = info.dateStr;
-
-            new bootstrap.Modal(modalEl).show();
+            if (eventModal) eventModal.show();
         },
 
+        // 🔹 Click en evento
         eventClick: function (info) {
             resetModal();
-            // 🔹 Llenar modal de detalle
+
             const start = info.event.start;
             const talleristas = info.event.extendedProps.talleristas || [];
 
@@ -90,11 +133,9 @@ document.addEventListener("DOMContentLoaded", function () {
             document.getElementById("detailFecha").innerText = start
                 ? start.toISOString().split("T")[0]
                 : "No asignado";
-
             document.getElementById("detailHora").innerText = start
                 ? start.toTimeString().slice(0, 5)
                 : "No asignado";
-
             document.getElementById("detailT1").innerText =
                 talleristas[0]?.nombre_completo || "No asignado";
             document.getElementById("detailT2").innerText =
@@ -104,26 +145,21 @@ document.addEventListener("DOMContentLoaded", function () {
                 "detailTalleristasContainer"
             ).style.display = talleristas.length > 0 ? "block" : "none";
 
-            // 🔹 Mostrar modal de detalle
-            const detailModal = new bootstrap.Modal(
-                document.getElementById("eventDetailModal")
-            );
-            detailModal.show();
+            if (eventDetailModal) eventDetailModal.show();
 
-            // 🔹 Botón "Editar" abre modal de edición
             document.getElementById("openEditModalBtn").onclick = function () {
-                detailModal.hide(); // cerrar modal de detalle
-                resetModal(); // limpiar modal de edición
-                // Llenar modal de edición
+                if (eventDetailModal) eventDetailModal.hide();
+                resetModal();
+
                 document.getElementById("modalTitle").innerText =
                     "Editar Evento";
                 document.getElementById("eventId").value = info.event.id;
+
                 const fecha = document.getElementById("fecha");
                 const hora = document.getElementById("hora");
                 if (fecha) fecha.value = start.toISOString().split("T")[0];
                 if (hora) hora.value = start.toTimeString().slice(0, 5);
 
-                // Colegio y taller
                 const colegioSelect = document.getElementById("colegio_id");
                 const tallerSelect = document.getElementById("taller_id");
                 if (colegioSelect)
@@ -131,7 +167,6 @@ document.addEventListener("DOMContentLoaded", function () {
                 if (tallerSelect)
                     tallerSelect.value = info.event.extendedProps.taller_id;
 
-                // Talleristas
                 const userRoleMeta = document.querySelector(
                     'meta[name="user-role"]'
                 );
@@ -146,16 +181,16 @@ document.addEventListener("DOMContentLoaded", function () {
                 }
 
                 if (deleteBtn) deleteBtn.style.display = "inline-block";
-
-                new bootstrap.Modal(modalEl).show();
+                if (eventModal) eventModal.show();
             };
         },
+
+        // 🔹 Arrastrar evento
         eventDrop: function (info) {
             const eventId = info.event.id;
             const newDate = info.event.start.toISOString().split("T")[0];
             const newTime = info.event.start.toTimeString().slice(0, 5);
 
-            // Preparar FormData
             const formData = new FormData();
             formData.append("fecha", newDate);
             formData.append("hora", newTime);
@@ -173,7 +208,7 @@ document.addEventListener("DOMContentLoaded", function () {
                 .then((data) => {
                     if (!data.success) {
                         alert("No se pudo actualizar la fecha/hora del evento");
-                        info.revert(); // Revertir si hubo error
+                        info.revert();
                     }
                 })
                 .catch(() => {
@@ -185,37 +220,33 @@ document.addEventListener("DOMContentLoaded", function () {
 
     calendar.render();
 
-    // 🔹 Evita duplicados en selects
+    // 🔹 Funciones de talleristas
     function syncTalleristaOptions() {
         const t1 = document.getElementById("tallerista1");
         const t2 = document.getElementById("tallerista2");
         if (!t1 || !t2) return;
 
-        const val1 = t1.value;
-        const val2 = t2.value;
-
         Array.from(t1.options).forEach(
-            (o) => (o.disabled = o.value && o.value === val2)
+            (o) => (o.disabled = o.value && o.value === t2.value)
         );
         Array.from(t2.options).forEach(
-            (o) => (o.disabled = o.value && o.value === val1)
+            (o) => (o.disabled = o.value && o.value === t1.value)
         );
     }
 
-    // 🔹 Mostrar resumen
     function mostrarResumen() {
         const t1 = document.getElementById("tallerista1");
         const t2 = document.getElementById("tallerista2");
         if (!t1 && !t2) return;
 
-        if ((t1 && t1.value) || (t2 && t2.value)) {
-            const tSelectContainer = document.getElementById(
-                "talleristaSelectContainer"
-            );
-            const tResumen = document.getElementById("talleristaResumen");
-            const t1Nombre = document.getElementById("t1Nombre");
-            const t2Nombre = document.getElementById("t2Nombre");
+        const tSelectContainer = document.getElementById(
+            "talleristaSelectContainer"
+        );
+        const tResumen = document.getElementById("talleristaResumen");
+        const t1Nombre = document.getElementById("t1Nombre");
+        const t2Nombre = document.getElementById("t2Nombre");
 
+        if ((t1 && t1.value) || (t2 && t2.value)) {
             tSelectContainer?.classList.add("d-none");
             tResumen?.classList.remove("d-none");
             if (t1Nombre)
@@ -230,13 +261,12 @@ document.addEventListener("DOMContentLoaded", function () {
     document
         .getElementById("editarTalleristasBtn")
         ?.addEventListener("click", function () {
-            const tSelectContainer = document.getElementById(
-                "talleristaSelectContainer"
-            );
-            const tResumen = document.getElementById("talleristaResumen");
-
-            tSelectContainer?.classList.remove("d-none");
-            tResumen?.classList.add("d-none");
+            document
+                .getElementById("talleristaSelectContainer")
+                ?.classList.remove("d-none");
+            document
+                .getElementById("talleristaResumen")
+                ?.classList.add("d-none");
         });
 
     document
@@ -249,7 +279,6 @@ document.addEventListener("DOMContentLoaded", function () {
     // 🔹 Guardar evento
     form.onsubmit = function (e) {
         e.preventDefault();
-
         const talleristas = [];
         const t1 = document.getElementById("tallerista1");
         const t2 = document.getElementById("tallerista2");
@@ -257,9 +286,11 @@ document.addEventListener("DOMContentLoaded", function () {
         if (t2 && t2.value) talleristas.push(t2.value);
 
         if (talleristas.length > 2) {
-            errorBox.textContent =
-                "Solo puedes seleccionar hasta 2 talleristas.";
-            errorBox.classList.remove("d-none");
+            if (errorBox) {
+                errorBox.textContent =
+                    "Solo puedes seleccionar hasta 2 talleristas.";
+                errorBox.classList.remove("d-none");
+            }
             return;
         }
 
@@ -280,15 +311,17 @@ document.addEventListener("DOMContentLoaded", function () {
             .then((data) => {
                 if (data.success) {
                     calendar.refetchEvents();
-                    bootstrap.Modal.getInstance(modalEl).hide();
-                } else {
+                    if (eventModal) eventModal.hide();
+                } else if (errorBox) {
                     errorBox.textContent = "Error al guardar el evento.";
                     errorBox.classList.remove("d-none");
                 }
             })
             .catch(() => {
-                errorBox.textContent = "Error de conexión.";
-                errorBox.classList.remove("d-none");
+                if (errorBox) {
+                    errorBox.textContent = "Error de conexión.";
+                    errorBox.classList.remove("d-none");
+                }
             });
     };
 });
