@@ -14,7 +14,7 @@ class AgendaController extends Controller
     {
         $talleres = Taller::all();
         $colegios = Colegio::all();
-        $usuarios = Usuario::all();
+        $usuarios = Usuario::where('rol', 'tallerista')->get(); // ✅ solo talleristas
         return view('agenda.index', compact('talleres','colegios','usuarios'));
     }
 

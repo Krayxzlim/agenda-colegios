@@ -1,6 +1,7 @@
 @extends('layouts.app')
 
 @section('content')
+@auth
 <div class="row">
     <div class="col-md-12">
         <div id="calendar"></div>
@@ -23,37 +24,58 @@
 
           <div class="mb-3">
             <label>Colectivo / Colegio</label>
-            <select name="colegio_id" id="colegio_id" class="form-control">
+            <select name="colegio_id" id="colegio_id" class="form-control"
+              @if(auth()->user()->rol === 'tallerista') disabled @endif>
               @foreach($colegios as $colegio)
                 <option value="{{ $colegio->id }}">{{ $colegio->nombre }}</option>
               @endforeach
             </select>
           </div>
+
           <div class="mb-3">
             <label>Taller</label>
-            <select name="taller_id" id="taller_id" class="form-control">
+            <select name="taller_id" id="taller_id" class="form-control"
+              @if(auth()->user()->rol === 'tallerista') disabled @endif>
               @foreach($talleres as $t)
                 <option value="{{ $t->id }}">{{ $t->nombre }}</option>
               @endforeach
             </select>
           </div>
+
           <div class="mb-3">
             <label>Fecha</label>
-            <input type="date" name="fecha" id="fecha" class="form-control" required>
+            <input type="date" name="fecha" id="fecha" class="form-control" required
+              @if(auth()->user()->rol === 'tallerista') disabled @endif>
           </div>
+
           <div class="mb-3">
             <label>Hora</label>
-            <input type="time" name="hora" id="hora" class="form-control" required>
+            <input type="time" name="hora" id="hora" class="form-control" required
+              @if(auth()->user()->rol === 'tallerista') disabled @endif>
           </div>
+
           <div class="mb-3">
             <label>Talleristas</label>
             <select multiple name="talleristas[]" id="talleristas" class="form-control">
               @foreach($usuarios as $u)
-                <option value="{{ $u->id }}">{{ $u->nombre }} {{ $u->apellido }}</option>
+                <option value="{{ $u->id }}"
+                  data-self="{{ $u->id == auth()->id() ? 'true' : 'false' }}">
+                  {{ $u->nombre }} {{ $u->apellido }}
+                </option>
               @endforeach
             </select>
             <small class="text-muted">Máx. 2 talleristas por evento</small>
           </div>
+
+          <!-- Botón extra solo si el usuario es Admin o Supervisor -->
+          @if(in_array(auth()->user()->rol, ['admin','supervisor']))
+            <div class="mb-3">
+              <button type="button" class="btn btn-warning" id="removeTalleristaBtn" style="display:none;">
+                Remover Tallerista
+              </button>
+            </div>
+          @endif
+
         </div>
         <div class="modal-footer">
           <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
@@ -64,6 +86,11 @@
     </form>
   </div>
 </div>
+@else
+  <div class="alert alert-warning">
+      Debes iniciar sesión para acceder a la agenda.
+  </div>
+@endauth
 @endsection
 
 @push('scripts')
@@ -82,6 +109,7 @@ document.addEventListener('DOMContentLoaded', function() {
         document.getElementById("eventId").value = "";
         errorBox.classList.add("d-none");
         deleteBtn.style.display = "none";
+        document.getElementById("removeTalleristaBtn")?.classList.add("d-none");
     }
 
     // Calendar init
