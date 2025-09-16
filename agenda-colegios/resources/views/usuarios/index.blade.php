@@ -70,6 +70,7 @@
                 <select name="rol" id="userRol" class="form-control" required>
                     <option value="admin">Admin</option>
                     <option value="tallerista">Tallerista</option>
+                    <option value="supervisor">Supervisor</option>
                 </select>
             </div>
         </div>
