@@ -19,8 +19,8 @@
 
         <ul class="navbar-nav me-auto">
             @auth
-                {{-- Solo talleristas y admins ven Colegios y Talleres --}}
-                @if(auth()->user()->rol === 'tallerista' || auth()->user()->rol === 'admin')
+                {{-- Admin y supervisor y tallerista: ver Colegios y Talleres --}}
+                @if(in_array(auth()->user()->rol, ['admin','supervisor','tallerista']))
                     <li class="nav-item">
                         <a class="nav-link" href="{{ route('colegios.index') }}">Colegios</a>
                     </li>
@@ -29,19 +29,19 @@
                     </li>
                 @endif
 
-                {{-- Solo los administradores ven Usuarios --}}
+                {{-- Solo admin ve Usuarios --}}
                 @if(auth()->user()->rol === 'admin')
                     <li class="nav-item">
                         <a class="nav-link" href="{{ route('usuarios.index') }}">Usuarios</a>
                     </li>
                 @endif
 
-                @if(auth()->check() && in_array(auth()->user()->rol, ['admin','supervisor']))
+                {{-- Admin y supervisor ven Reportes --}}
+                @if(in_array(auth()->user()->rol, ['admin','supervisor']))
                     <li class="nav-item">
                         <a class="nav-link" href="{{ route('reportes.index') }}">Reportes</a>
                     </li>
                 @endif
-
             @endauth
         </ul>
 
