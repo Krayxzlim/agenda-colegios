@@ -1,61 +1,64 @@
-<p align="center"><a href="https://laravel.com" target="_blank"><img src="https://raw.githubusercontent.com/laravel/art/master/logo-lockup/5%20SVG/2%20CMYK/1%20Full%20Color/laravel-logolockup-cmyk-red.svg" width="400" alt="Laravel Logo"></a></p>
+📚 Agenda de Colegios
+💡 Idea del Proyecto
 
-<p align="center">
-<a href="https://github.com/laravel/framework/actions"><img src="https://github.com/laravel/framework/workflows/tests/badge.svg" alt="Build Status"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/dt/laravel/framework" alt="Total Downloads"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/v/laravel/framework" alt="Latest Stable Version"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/l/laravel/framework" alt="License"></a>
-</p>
+La aplicación Agenda de Colegios es una plataforma web diseñada para gestionar talleres escolares en distintos colegios. Permite:
 
-## About Laravel
+Crear, editar y eliminar eventos/talleres.
 
-Laravel is a web application framework with expressive, elegant syntax. We believe development must be an enjoyable and creative experience to be truly fulfilling. Laravel takes the pain out of development by easing common tasks used in many web projects, such as:
+Asignar talleristas a eventos.
 
-- [Simple, fast routing engine](https://laravel.com/docs/routing).
-- [Powerful dependency injection container](https://laravel.com/docs/container).
-- Multiple back-ends for [session](https://laravel.com/docs/session) and [cache](https://laravel.com/docs/cache) storage.
-- Expressive, intuitive [database ORM](https://laravel.com/docs/eloquent).
-- Database agnostic [schema migrations](https://laravel.com/docs/migrations).
-- [Robust background job processing](https://laravel.com/docs/queues).
-- [Real-time event broadcasting](https://laravel.com/docs/broadcasting).
+Generar reportes de actividades.
 
-Laravel is accessible, powerful, and provides tools required for large, robust applications.
+Gestionar colegios y usuarios según permisos.
 
-## Learning Laravel
+El objetivo es centralizar la planificación y supervisión de talleres, optimizando la organización y comunicación entre colegios y talleristas.
 
-Laravel has the most extensive and thorough [documentation](https://laravel.com/docs) and video tutorial library of all modern web application frameworks, making it a breeze to get started with the framework.
+👥 Usuarios y Roles
+| Rol | Descripción | Acceso principal |
+| -------------- | ------------------------------------------------------------- | ------------------------------------------------------------ |
+| **Admin** | Usuario con control total sobre la plataforma. | Gestión de usuarios, colegios, talleres, eventos y reportes. |
+| **Supervisor** | Usuario encargado de supervisar y coordinar actividades. | Gestión de colegios, talleres, eventos y reportes. |
+| **Tallerista** | Usuario encargado de dictar talleres y registrar actividades. | Gestión de colegios, talleres y eventos asignados. |
 
-You may also try the [Laravel Bootcamp](https://bootcamp.laravel.com), where you will be guided through building a modern Laravel application from scratch.
+⚙️ Funcionalidades por Rol
+1️⃣ Admin
 
-If you don't feel like reading, [Laracasts](https://laracasts.com) can help. Laracasts contains thousands of video tutorials on a range of topics including Laravel, modern PHP, unit testing, and JavaScript. Boost your skills by digging into our comprehensive video library.
+CRUD de Usuarios
 
-## Laravel Sponsors
+CRUD de Colegios
 
-We would like to extend our thanks to the following sponsors for funding Laravel development. If you are interested in becoming a sponsor, please visit the [Laravel Partners program](https://partners.laravel.com).
+CRUD de Talleres / Eventos
 
-### Premium Partners
+Asignación de Talleristas a eventos
 
-- **[Vehikl](https://vehikl.com)**
-- **[Tighten Co.](https://tighten.co)**
-- **[Kirschbaum Development Group](https://kirschbaumdevelopment.com)**
-- **[64 Robots](https://64robots.com)**
-- **[Curotec](https://www.curotec.com/services/technologies/laravel)**
-- **[DevSquad](https://devsquad.com/hire-laravel-developers)**
-- **[Redberry](https://redberry.international/laravel-development)**
-- **[Active Logic](https://activelogic.com)**
+CRUD de Reportes (visualización y exportación)
 
-## Contributing
+2️⃣ Supervisor
 
-Thank you for considering contributing to the Laravel framework! The contribution guide can be found in the [Laravel documentation](https://laravel.com/docs/contributions).
+CRUD de Colegios
 
-## Code of Conduct
+CRUD de Talleres / Eventos
 
-In order to ensure that the Laravel community is welcoming to all, please review and abide by the [Code of Conduct](https://laravel.com/docs/contributions#code-of-conduct).
+Asignación de Talleristas a eventos
 
-## Security Vulnerabilities
+CRUD de Reportes (visualización y exportación)
 
-If you discover a security vulnerability within Laravel, please send an e-mail to Taylor Otwell via [taylor@laravel.com](mailto:taylor@laravel.com). All security vulnerabilities will be promptly addressed.
+3️⃣ Tallerista
 
-## License
+CRUD de Colegios
 
-The Laravel framework is open-sourced software licensed under the [MIT license](https://opensource.org/licenses/MIT).
+CRUD de Talleres / Eventos asignados
+
+Consultar agenda de talleres
+
+🛠️ Tecnologías Utilizadas
+
+Backend: PHP, Laravel
+
+Frontend: Blade + Bootstrap + FullCalendar
+
+Base de datos: MySQL
+
+Autenticación y roles: Middleware personalizado CheckRole
+
+Gestión de dependencias: Composer
