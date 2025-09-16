@@ -1,5 +1,5 @@
 document.addEventListener("DOMContentLoaded", function () {
-    // 🔹 Elementos del DOM
+    // Elementos del DOM
     const calendarEl = document.getElementById("calendar");
     const modalEl = document.getElementById("eventModal");
     const detailModalEl = document.getElementById("eventDetailModal");
@@ -11,14 +11,14 @@ document.addEventListener("DOMContentLoaded", function () {
 
     if (!calendarEl) return;
 
-    // 🔹 Instancias únicas de modales
+    // Instancias únicas de modales
     const eventModal = modalEl ? new bootstrap.Modal(modalEl) : null;
     const eventDetailModal = detailModalEl
         ? new bootstrap.Modal(detailModalEl)
         : null;
     const userModal = userModalEl ? new bootstrap.Modal(userModalEl) : null;
 
-    // 🔹 Funciones para nuevo/editar usuario
+    // Funciones para nuevo/editar usuario
     window.newUser = function () {
         if (!userModal) return;
         userForm.reset();
@@ -39,7 +39,7 @@ document.addEventListener("DOMContentLoaded", function () {
         userModal.show();
     };
 
-    // 🔹 Reset modal usuario al cerrar
+    // Reset modal usuario
     if (userModalEl) {
         userModalEl.addEventListener("hidden.bs.modal", function () {
             userForm.reset();
@@ -49,7 +49,7 @@ document.addEventListener("DOMContentLoaded", function () {
         });
     }
 
-    // 🔹 Función para reset modal evento
+    // Función reset modal evento
     function resetModal() {
         if (!form) return;
         form.reset();
@@ -75,7 +75,7 @@ document.addEventListener("DOMContentLoaded", function () {
         if (t2Nombre) t2Nombre.innerText = "";
     }
 
-    // 🔹 Inicializar calendario
+    // Inicializar
     const calendar = new FullCalendar.Calendar(calendarEl, {
         initialView: "dayGridMonth",
         editable: true,
@@ -94,7 +94,7 @@ document.addEventListener("DOMContentLoaded", function () {
             },
         },
 
-        // 🔹 Click en fecha
+        // Click en fecha
         dateClick: function (info) {
             const dia = info.date.getDay();
             if (dia === 0 || dia === 6) {
@@ -111,7 +111,7 @@ document.addEventListener("DOMContentLoaded", function () {
             if (eventModal) eventModal.show();
         },
 
-        // 🔹 Click en evento
+        // Click en evento
         eventClick: function (info) {
             resetModal();
 
@@ -185,7 +185,7 @@ document.addEventListener("DOMContentLoaded", function () {
             };
         },
 
-        // 🔹 Arrastrar evento
+        // Arrastrar evento
         eventDrop: function (info) {
             const eventId = info.event.id;
             const newDate = info.event.start.toISOString().split("T")[0];
@@ -220,7 +220,7 @@ document.addEventListener("DOMContentLoaded", function () {
 
     calendar.render();
 
-    // 🔹 Funciones de talleristas
+    // Funciones de talleristas
     function syncTalleristaOptions() {
         const t1 = document.getElementById("tallerista1");
         const t2 = document.getElementById("tallerista2");
@@ -276,7 +276,7 @@ document.addEventListener("DOMContentLoaded", function () {
         .getElementById("tallerista2")
         ?.addEventListener("change", syncTalleristaOptions);
 
-    // 🔹 Guardar evento
+    // Guardar evento
     form.onsubmit = function (e) {
         e.preventDefault();
         const talleristas = [];

@@ -14,7 +14,7 @@ class AgendaController extends Controller
     {
         $talleres = Taller::all();
         $colegios = Colegio::all();
-        $usuarios = Usuario::where('rol', 'tallerista')->get(); // ✅ solo talleristas
+        $usuarios = Usuario::where('rol', 'tallerista')->get();
         return view('agenda.index', compact('talleres','colegios','usuarios'));
     }
 
@@ -58,7 +58,7 @@ class AgendaController extends Controller
             $request->only('colegio_id', 'taller_id', 'fecha', 'hora')
         );
 
-        // Sincronizar talleristas
+        // sinc talleristas
         $agenda->talleristas()->sync($request->talleristas ?? []);
 
         return response()->json(['success' => true]);

@@ -16,17 +16,15 @@ class UsuarioController extends Controller
 
     public function store(Request $request)
     {
-        // Si viene con ID => es edición
+        // por ID => es edición
         if ($request->id) {
             $usuario = Usuario::findOrFail($request->id);
 
-            // Solo se puede cambiar rol
             $usuario->update([
                 'rol' => $request->rol,
             ]);
 
         } else {
-            // Validación creación
             $data = $request->validate([
                 'nombre'   => 'required',
                 'apellido' => 'required',

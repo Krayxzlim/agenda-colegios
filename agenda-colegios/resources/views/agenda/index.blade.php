@@ -111,7 +111,7 @@
           </div>
 
 
-          <!-- Botón extra solo si el usuario es Admin o Supervisor -->
+          <!-- Botónsolo si Admin o Supervisor -->
           @if(in_array(auth()->user()->rol, ['admin','supervisor']))
             <div class="mb-3">
               <button type="button" class="btn btn-warning" id="removeTalleristaBtn" style="display:none;">

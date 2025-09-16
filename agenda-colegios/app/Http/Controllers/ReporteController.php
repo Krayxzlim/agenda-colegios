@@ -63,20 +63,20 @@ class ReporteController extends Controller
 
             case 'por_tallerista':
                 $data = [];
-                $agendas = $query->with('talleristas')->get(); // traemos los talleristas
+                $agendas = $query->with('talleristas')->get(); // query talleristas
                 foreach($agendas as $evento){
                     $colegio = $evento->colegio->nombre ?? 'Sin asignar';
                     $taller = $evento->taller->nombre ?? 'Sin asignar';
                     $fecha = $evento->fecha;
                     $hora = $evento->hora ?? '';
                     foreach($evento->talleristas as $t){
-                        // si se filtró por tallerista, solo incluir ese
+                        // fltro x tallerista
                         if($tallerista_id && $t->id != $tallerista_id) continue;
 
                         $data[] = [
                             'Colegio' => $colegio,
                             'Taller' => $taller,
-                            'Tallerista' => $t->nombre . ' ' . $t->apellido, // mostrar nombre y apellido
+                            'Tallerista' => $t->nombre . ' ' . $t->apellido,
                             'Fecha' => $fecha,
                             'Hora' => $hora
                         ];

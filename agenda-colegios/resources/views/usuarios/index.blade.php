@@ -89,14 +89,14 @@
 function newUser(){
     document.getElementById('userForm').reset();
     document.getElementById('userId').value = '';
-    document.getElementById('fieldsFull').style.display = 'block'; // mostrar todos los campos
+    document.getElementById('fieldsFull').style.display = 'block';
     document.querySelector('#userModal .modal-title').innerText = 'Agregar Usuario';
     new bootstrap.Modal(document.getElementById('userModal')).show();
 }
 
 function editUser(u){
     document.getElementById('userId').value = u.id;
-    document.getElementById('fieldsFull').style.display = 'none'; // ocultar campos nombre, email, password
+    document.getElementById('fieldsFull').style.display = 'none';
     document.getElementById('userRol').value = u.rol;
     document.querySelector('#userModal .modal-title').innerText = 'Editar Rol';
     new bootstrap.Modal(document.getElementById('userModal')).show();

@@ -17,21 +17,19 @@ Route::delete('/agenda/{id}', [AgendaController::class, 'destroy'])->name('agend
 Route::post('agenda/{agenda}/asignar-tallerista', [AgendaController::class,'asignarTallerista'])->name('agenda.asignar');
 Route::post('agenda/{agenda}/eliminar-tallerista', [AgendaController::class,'eliminarTallerista'])->name('agenda.eliminar');
 
-// Rutas protegidas por rol usando la clase completa del middleware
-
-// Usuarios → solo admin
+// Usuarios solo admin
 Route::middleware(['auth', CheckRole::class.':admin'])->group(function () {
     Route::resource('usuarios', UsuarioController::class);
 });
 
-// Reportes → admin y supervisor
+// Reportes admin y supervisor
 Route::middleware(['auth', CheckRole::class.':admin,supervisor'])->group(function () {
     Route::get('/reportes', [ReporteController::class, 'index'])->name('reportes.index');
     Route::post('/reportes/filtrar', [ReporteController::class, 'filtrar'])->name('reportes.filtrar');
     Route::post('/reportes/export', [ReporteController::class, 'export'])->name('reportes.export');
 });
 
-// Colegios y Talleres → todos los roles
+// Colegios y Talleres todos los roles
 Route::middleware(['auth', CheckRole::class.':admin,supervisor,tallerista'])->group(function () {
     Route::resource('colegios', ColegioController::class);
     Route::resource('talleres', TallerController::class);

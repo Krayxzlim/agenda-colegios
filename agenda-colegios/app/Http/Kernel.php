@@ -43,7 +43,7 @@ class Kernel extends HttpKernel
      */
     protected $routeMiddleware = [
         'auth' => \App\Http\Middleware\Authenticate::class,
-        'role' => \App\Http\Middleware\CheckRole::class, // <- tu middleware de roles
+        'role' => \App\Http\Middleware\CheckRole::class, // tengo un error que no me deja llamar el alias role y tengo que usar el fullclass, vere si encuentro com arreglarlo
         'guest' => \App\Http\Middleware\RedirectIfAuthenticated::class,
         'verified' => \Illuminate\Auth\Middleware\EnsureEmailIsVerified::class,
     ];

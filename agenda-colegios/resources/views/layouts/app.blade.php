@@ -19,7 +19,7 @@
 
         <ul class="navbar-nav me-auto">
             @auth
-                {{-- Admin y supervisor y tallerista: ver Colegios y Talleres --}}
+                {{-- Admin supervisor tallerista: ver Colegios y Talleres --}}
                 @if(in_array(auth()->user()->rol, ['admin','supervisor','tallerista']))
                     <li class="nav-item">
                         <a class="nav-link" href="{{ route('colegios.index') }}">Colegios</a>
