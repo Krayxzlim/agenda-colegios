@@ -54,12 +54,6 @@
                     </form>
                 </li>
             @endauth
-
-            @guest
-                <li class="nav-item">
-                    <a class="btn btn-outline-primary" href="{{ route('login') }}">Iniciar sesión</a>
-                </li>
-            @endguest
         </ul>
     </div>
 </nav>
